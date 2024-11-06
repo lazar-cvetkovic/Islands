@@ -1,8 +1,11 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class HexCell : MonoBehaviour, IPointerClickHandler
 {
+    [SerializeField] private float _tileDropHeight = 3;
+
     public HexCoordinates Coordinates { get; private set; }
     public int Height { get; private set; }
     public int IslandId { get; set; } = -1;
@@ -15,10 +18,11 @@ public class HexCell : MonoBehaviour, IPointerClickHandler
         Coordinates = coordinates;
         Height = height;
         _modelsConfig = modelsConfig;
-        UpdateVisuals();
+
+        SpawnTiles();
     }
 
-    private void UpdateVisuals()
+    private void SpawnTiles()
     {
         if (IsWater)
         {
@@ -30,19 +34,18 @@ public class HexCell : MonoBehaviour, IPointerClickHandler
             int remainder = Height % 100;
 
             int totalFillTiles = fullHundreds + (remainder > 0 ? 1 : 0);
-            float dropHeight = 10f;
 
             for (int i = 0; i < fullHundreds; i++)
             {
-                SpawnFillTiles(dropHeight, i);
+                SpawnFillTiles(_tileDropHeight, i);
             }
 
             if (remainder > 0)
             {
-                SpawnAndScaleLastFillTile(fullHundreds, remainder, dropHeight);
+                SpawnAndScaleLastFillTile(fullHundreds, remainder, _tileDropHeight);
             }
 
-            SpawnTopObject(totalFillTiles, dropHeight);
+            SpawnTopTile(totalFillTiles, _tileDropHeight);
         }
     }
 
@@ -75,7 +78,7 @@ public class HexCell : MonoBehaviour, IPointerClickHandler
         rb.mass = 1f;
     }
 
-    private void SpawnTopObject(int totalFillTiles, float dropHeight)
+    private void SpawnTopTile(int totalFillTiles, float dropHeight)
     {
         Vector3 topPosition = transform.position + Vector3.up * (dropHeight + totalFillTiles);
         GameObject topObject = Instantiate(GetTopPrefab(), topPosition, Quaternion.identity, transform);
