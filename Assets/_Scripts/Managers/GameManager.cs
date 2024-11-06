@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(DataLoader))]
+[RequireComponent(typeof(DataLoader), typeof(HexGrid))]
 public class GameManager : Singleton<GameManager>
 {
     public GameState CurrentState { get; private set; }

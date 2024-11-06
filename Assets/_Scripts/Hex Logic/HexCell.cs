@@ -46,12 +46,7 @@ public class HexCell : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    private void SpawnWater()
-    {
-        GameObject water = Instantiate(_modelsConfig.WaterTile, transform.position, Quaternion.identity, transform);
-        Rigidbody rb = water.GetComponent<Rigidbody>() ?? water.AddComponent<Rigidbody>();
-        rb.isKinematic = true;
-    }
+    private void SpawnWater() => Instantiate(_modelsConfig.WaterTile, transform.position, Quaternion.identity, transform);
 
     private void SpawnFillTiles(float dropHeight, int i)
     {

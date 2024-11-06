@@ -2,20 +2,23 @@ using UnityEngine;
 
 public class HexGrid : MonoBehaviour
 {
-    public int Width = 30;
-    public int Height = 30;
-    public GameObject HexCellPrefab;
-    public ModelsConfigSO ModelsConfig;
+    [SerializeField] private int _width = 30;
+    [SerializeField] private int _height = 30;
+    [SerializeField] private GameObject _hexCellPrefab;
+    [SerializeField] private ModelsConfigSO _modelsConfig;
 
     private HexCell[,] _cells;
+
     public HexCell[,] Cells => _cells;
+    public int Height => _height;
+    public int Width => _width;
 
     public void GenerateGrid(int[,] heightMap)
     {
-        _cells = new HexCell[Width, Height];
-        for (int axialX = 0; axialX < Width; axialX++)
+        _cells = new HexCell[_width, _height];
+        for (int axialX = 0; axialX < _width; axialX++)
         {
-            for (int axialY = 0; axialY < Height; axialY++)
+            for (int axialY = 0; axialY < _height; axialY++)
             {
                 CreateCell(axialX, axialY, heightMap[axialX, axialY]);
             }
@@ -25,9 +28,9 @@ public class HexGrid : MonoBehaviour
     private void CreateCell(int axialX, int axialY, int cellHeight)
     {
         Vector3 position = CalculatePosition(axialX, axialY);
-        GameObject cellObject = Instantiate(HexCellPrefab, position, Quaternion.identity, transform);
+        GameObject cellObject = Instantiate(_hexCellPrefab, position, Quaternion.identity, transform);
         HexCell cell = cellObject.GetComponent<HexCell>();
-        cell.Initialize(new HexCoordinates(axialX, axialY), cellHeight, ModelsConfig);
+        cell.Initialize(new HexCoordinates(axialX, axialY), cellHeight, _modelsConfig);
         _cells[axialX, axialY] = cell;
     }
 

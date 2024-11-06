@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b72ce3173b6f8640bafcfdc69ba2376, type: 3}
+  m_Name: ModelsConfigSO
+  m_EditorClassIdentifier: 
+  WaterTile: {fileID: 8271273842010588189, guid: ee71a94b1d591c24298e53cff58ae8c9, type: 3}
+  HeightFillTile: {fileID: 1433840306250153943, guid: a7db4d77cc7a2d345a3d43d396a8fa81, type: 3}
+  TileForHeightAbove0: {fileID: 4295435300628032519, guid: a6ff2263b369cb04bb3e75b9670d9ef8, type: 3}
+  TileForHeightAbove100: {fileID: 3360411722580686936, guid: 428b7b202d49c7940a1301a17bd4d04a, type: 3}
+  TileForHeightAbove200: {fileID: 3360411722580686936, guid: 428b7b202d49c7940a1301a17bd4d04a, type: 3}
+  TileForHeightAbove300: {fileID: 3360411722580686936, guid: 428b7b202d49c7940a1301a17bd4d04a, type: 3}
+  TileForHeightAbove400: {fileID: 3360411722580686936, guid: 428b7b202d49c7940a1301a17bd4d04a, type: 3}
+  TileForHeightAbove500: {fileID: 4120052999112946816, guid: 4730ea6bf84600c4d87fe490fbd5a494, type: 3}
+  TileForHeightAbove600: {fileID: 4120052999112946816, guid: 4730ea6bf84600c4d87fe490fbd5a494, type: 3}
+  TileForHeightAbove700: {fileID: 958050590075379825, guid: 2782ffac615e79f41b9e25e22eb6910e, type: 3}
+  TileForHeightAbove800: {fileID: 7839409205652156877, guid: cf6451e09beb92c4582be832f8d42aac, type: 3}
+  TileForHeightAbove900: {fileID: 7839409205652156877, guid: cf6451e09beb92c4582be832f8d42aac, type: 3}
