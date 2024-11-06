@@ -136,4 +136,19 @@ public class HexCell : MonoBehaviour, IPointerClickHandler
             renderer.SetPropertyBlock(_propertyBlock);
         }
     }
+
+    public void SetHighlightColor(Color color)
+    {
+        if (_propertyBlock == null)
+        {
+            _propertyBlock = new MaterialPropertyBlock();
+        }
+
+        foreach (var renderer in _renderers)
+        {
+            renderer.GetPropertyBlock(_propertyBlock);
+            _propertyBlock.SetColor(ColorProperty, color);
+            renderer.SetPropertyBlock(_propertyBlock);
+        }
+    }
 }

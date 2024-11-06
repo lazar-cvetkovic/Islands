@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,14 +6,23 @@ using UnityEngine;
 [RequireComponent(typeof(DataLoader), typeof(HexGrid))]
 public class GameManager : Singleton<GameManager>
 {
+    public static event Action<int> OnScoreChanged;
+    public static event Action<int, int> OnLivesChanged; 
+    public static event Action<int, int> OnGameOver;
+
+    public const string HighScoreKey = "HighScore";
     public GameState CurrentState { get; private set; }
 
-    private int _guessesLeft = 3;
+    private int _lives = 3;
     private int _targetIslandId;
 
     private DataLoader _dataLoader;
     private HexGrid _hexGrid;
     private IslandDetector _islandDetector;
+
+    private int _score = 0;
+    private WaitForSeconds _islandSelectionWaitTime = new(2);
+
 
     protected override void Awake()
     {
@@ -24,33 +34,20 @@ public class GameManager : Singleton<GameManager>
 
     private void Start()
     {
-       InitializeGame();
+        InitializeGame();
     }
 
     private void InitializeGame()
     {
         CurrentState = GameState.Loading;
-        _dataLoader.LoadData(HandleLoadedData);
-    }
 
-    private void EndGame(bool isWin)
-    {
-        CurrentState = GameState.GameOver;
-        if (isWin)
-        {
-            // TODO: Add win logic
-            Debug.Log("You found the highest island!");
-        }
-        else
-        {
-            // TODO: Add loose logic
-            Debug.Log("Game Over!");
-        }
+        _hexGrid.ClearGrid();
+        _dataLoader.LoadData(HandleLoadedData);
     }
 
     private void HandleLoadedData(bool isDataLoadedCorrectly)
     {
-        if(!isDataLoadedCorrectly)
+        if (!isDataLoadedCorrectly)
         {
             // TODO: Add bad data UI feedback
             return;
@@ -65,6 +62,9 @@ public class GameManager : Singleton<GameManager>
         _targetIslandId = _islandDetector.GetHighestAverageIslandId();
 
         CurrentState = GameState.Playing;
+        PlayerInputManager.Instance.SetInputEnabled(true);
+
+        OnLivesChanged?.Invoke(_lives, 3);
     }
 
     public void HandleCellClick(HexCell cell)
@@ -72,21 +72,69 @@ public class GameManager : Singleton<GameManager>
         if (CurrentState != GameState.Playing || cell.IsWater) return;
 
         int selectedIslandId = cell.IslandId;
+
+        CurrentState = GameState.Paused;
+
+        PlayerInputManager.Instance.SetInputEnabled(false);
+
+        StartCoroutine(HandleIslandSelection(selectedIslandId));
+    }
+
+    private IEnumerator HandleIslandSelection(int selectedIslandId)
+    {
+        HighlightIsland(_targetIslandId, Color.green);
+
+        if (selectedIslandId != _targetIslandId)
+        {
+            HighlightIsland(selectedIslandId, Color.red);
+        }
+
+        yield return _islandSelectionWaitTime;
+
         if (selectedIslandId == _targetIslandId)
         {
-            EndGame(true);
+            _score++;
+            OnScoreChanged?.Invoke(_score);
+
+            InitializeGame();
+
+            CurrentState = GameState.Playing;
         }
         else
         {
-            _guessesLeft--;
-            if (_guessesLeft <= 0)
+            _lives--;
+            OnLivesChanged?.Invoke(_lives, 3);
+
+            if (_lives <= 0)
             {
-                EndGame(false);
+                int highScore = PlayerPrefs.GetInt(HighScoreKey, 0);
+                if (_score > highScore)
+                {
+                    PlayerPrefs.SetInt(HighScoreKey, _score);
+                    highScore = _score;
+                }
+
+                OnGameOver?.Invoke(_score, highScore);
+
+                CurrentState = GameState.GameOver;
             }
             else
             {
-                // TODO: Provide feedback to the player
+                InitializeGame();
+
+                CurrentState = GameState.Playing;
+
+                PlayerInputManager.Instance.SetInputEnabled(true);
             }
+        }
+    }
+
+    private void HighlightIsland(int islandId, Color color)
+    {
+        var islandCells = GetIslandCells(islandId);
+        foreach (var cell in islandCells)
+        {
+            cell.SetHighlightColor(color);
         }
     }
 
@@ -98,12 +146,22 @@ public class GameManager : Singleton<GameManager>
         }
         return new List<HexCell>();
     }
+
+    public void ResetGame()
+    {
+        _score = 0;
+        _lives = 3;
+        InitializeGame();
+
+        OnScoreChanged?.Invoke(_score);
+        OnLivesChanged?.Invoke(_lives, 3);
+    }
 }
 
-public enum GameState 
+public enum GameState
 {
-    Loading = 0, 
-    Playing = 1, 
-    GameOver = 2
+    Loading = 0,
+    Playing = 1,
+    Paused = 2,
+    GameOver = 3
 }
-

@@ -25,6 +25,20 @@ public class HexGrid : MonoBehaviour
         }
     }
 
+    public void ClearGrid()
+    {
+        if (_cells != null)
+        {
+            foreach (var cell in _cells)
+            {
+                if (cell != null)
+                {
+                    Destroy(cell.gameObject);
+                }
+            }
+        }
+    }
+
     private void CreateCell(int axialX, int axialY, int cellHeight)
     {
         Vector3 position = CalculatePosition(axialX, axialY);
