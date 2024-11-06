@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(DataLoader), typeof(HexGrid))]
@@ -32,6 +33,21 @@ public class GameManager : Singleton<GameManager>
         _dataLoader.LoadData(HandleLoadedData);
     }
 
+    private void EndGame(bool isWin)
+    {
+        CurrentState = GameState.GameOver;
+        if (isWin)
+        {
+            // TODO: Add win logic
+            Debug.Log("You found the highest island!");
+        }
+        else
+        {
+            // TODO: Add loose logic
+            Debug.Log("Game Over!");
+        }
+    }
+
     private void HandleLoadedData(bool isDataLoadedCorrectly)
     {
         if(!isDataLoadedCorrectly)
@@ -51,7 +67,7 @@ public class GameManager : Singleton<GameManager>
         CurrentState = GameState.Playing;
     }
 
-    public void OnCellClicked(HexCell cell)
+    public void HandleCellClick(HexCell cell)
     {
         if (CurrentState != GameState.Playing || cell.IsWater) return;
 
@@ -74,19 +90,13 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    private void EndGame(bool isWin)
+    public List<HexCell> GetIslandCells(int islandId)
     {
-        CurrentState = GameState.GameOver;
-        if (isWin)
+        if (_islandDetector.Islands.TryGetValue(islandId, out var islandCells))
         {
-            // TODO: Add win logic
-            Debug.Log("You found the highest island!");
+            return islandCells;
         }
-        else
-        {
-            // TODO: Add loose logic
-            Debug.Log("Game Over!");
-        }
+        return new List<HexCell>();
     }
 }
 

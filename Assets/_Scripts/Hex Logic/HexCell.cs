@@ -13,6 +13,10 @@ public class HexCell : MonoBehaviour, IPointerClickHandler
 
     private ModelsConfigSO _modelsConfig;
 
+    private Renderer[] _renderers;
+    private MaterialPropertyBlock _propertyBlock;
+    private static readonly int ColorProperty = Shader.PropertyToID("_BaseColor");
+
     public void Initialize(HexCoordinates coordinates, int height, ModelsConfigSO modelsConfig)
     {
         Coordinates = coordinates;
@@ -20,6 +24,9 @@ public class HexCell : MonoBehaviour, IPointerClickHandler
         _modelsConfig = modelsConfig;
 
         SpawnTiles();
+
+        _renderers = GetComponentsInChildren<Renderer>();
+        _propertyBlock = new MaterialPropertyBlock();
     }
 
     private void SpawnTiles()
@@ -107,6 +114,26 @@ public class HexCell : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        GameManager.Instance.OnCellClicked(this);
+        GameManager.Instance.HandleCellClick(this);
+    }
+
+    public void Highlight()
+    {
+        foreach (var renderer in _renderers)
+        {
+            renderer.GetPropertyBlock(_propertyBlock);
+            _propertyBlock.SetColor(ColorProperty, Color.gray); 
+            renderer.SetPropertyBlock(_propertyBlock);
+        }
+    }
+
+    public void Unhighlight()
+    {
+        foreach (var renderer in _renderers)
+        {
+            renderer.GetPropertyBlock(_propertyBlock);
+            _propertyBlock.SetColor(ColorProperty, Color.white); 
+            renderer.SetPropertyBlock(_propertyBlock);
+        }
     }
 }
