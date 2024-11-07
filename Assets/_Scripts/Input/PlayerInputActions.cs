@@ -143,6 +143,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Settings"",
+                    ""type"": ""Button"",
+                    ""id"": ""6095cd78-6967-4e34-bc82-e9e8d377f258"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -572,6 +581,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""ToggleCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8c202afc-6b22-431d-8151-2ef7fb0c79d6"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Settings"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1260,6 +1280,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_MousePosition = m_Player.FindAction("MousePosition", throwIfNotFound: true);
         m_Player_MouseMove = m_Player.FindAction("MouseMove", throwIfNotFound: true);
         m_Player_ToggleCamera = m_Player.FindAction("ToggleCamera", throwIfNotFound: true);
+        m_Player_Settings = m_Player.FindAction("Settings", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1359,6 +1380,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_MousePosition;
     private readonly InputAction m_Player_MouseMove;
     private readonly InputAction m_Player_ToggleCamera;
+    private readonly InputAction m_Player_Settings;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -1376,6 +1398,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @MousePosition => m_Wrapper.m_Player_MousePosition;
         public InputAction @MouseMove => m_Wrapper.m_Player_MouseMove;
         public InputAction @ToggleCamera => m_Wrapper.m_Player_ToggleCamera;
+        public InputAction @Settings => m_Wrapper.m_Player_Settings;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1424,6 +1447,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @ToggleCamera.started += instance.OnToggleCamera;
             @ToggleCamera.performed += instance.OnToggleCamera;
             @ToggleCamera.canceled += instance.OnToggleCamera;
+            @Settings.started += instance.OnSettings;
+            @Settings.performed += instance.OnSettings;
+            @Settings.canceled += instance.OnSettings;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1467,6 +1493,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @ToggleCamera.started -= instance.OnToggleCamera;
             @ToggleCamera.performed -= instance.OnToggleCamera;
             @ToggleCamera.canceled -= instance.OnToggleCamera;
+            @Settings.started -= instance.OnSettings;
+            @Settings.performed -= instance.OnSettings;
+            @Settings.canceled -= instance.OnSettings;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1732,6 +1761,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnMousePosition(InputAction.CallbackContext context);
         void OnMouseMove(InputAction.CallbackContext context);
         void OnToggleCamera(InputAction.CallbackContext context);
+        void OnSettings(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

@@ -4,7 +4,10 @@ public class HexGrid : MonoBehaviour
 {
     [SerializeField] private int _width = 30;
     [SerializeField] private int _height = 30;
+
+    [SerializeField] private GameObject _optimizedCellPrefab;
     [SerializeField] private GameObject _hexCellPrefab;
+
     [SerializeField] private ModelsConfigSO _modelsConfig;
 
     private IHexCell[,] _cells;
@@ -12,6 +15,7 @@ public class HexGrid : MonoBehaviour
     public IHexCell[,] Cells => _cells;
     public int Height => _height;
     public int Width => _width;
+    public GameObject CellPrefab => GameManager.Instance.IsOptimized ? _optimizedCellPrefab : _hexCellPrefab;  
 
     public void GenerateGrid(int[,] heightMap)
     {
@@ -46,7 +50,7 @@ public class HexGrid : MonoBehaviour
     private void CreateCell(int axialX, int axialY, int cellHeight)
     {
         Vector3 position = CalculatePosition(axialX, axialY);
-        GameObject cellObject = Instantiate(_hexCellPrefab, position, Quaternion.identity, transform);
+        GameObject cellObject = Instantiate(CellPrefab, position, Quaternion.identity, transform);
         IHexCell cell = cellObject.GetComponent<IHexCell>();
         cell.Initialize(new HexCoordinates(axialX, axialY), cellHeight, _modelsConfig);
         _cells[axialX, axialY] = cell;

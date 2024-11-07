@@ -1,8 +1,10 @@
+using System;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIManager : MonoBehaviour
+public class UIManager : Singleton<UIManager>
 {
     [Header("Main UI")]
     [SerializeField] private TMP_Text _scoreText;
@@ -12,6 +14,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject _gameOverPanel;
     [SerializeField] private TMP_Text _finalScoreText;
     [SerializeField] private TMP_Text _highScoreText;
+
+    [Header("Settings UI")]
+    [SerializeField] private GameObject _settingsPanel;
 
     [Header("Average Height UI")]
     [SerializeField] private GameObject _leftHeightObject;
@@ -71,7 +76,7 @@ public class UIManager : MonoBehaviour
 
         if (currentLives >= 0 && currentLives < _heartImages.Length)
         {
-            LeanTween.scale(_heartImages[currentLives].gameObject, Vector3.zero, 0.2f).setEaseInExpo();
+            LeanTween.scale(_heartImages[currentLives], Vector3.zero, 0.5f).setEaseInExpo();
         }
     }
 
@@ -80,14 +85,31 @@ public class UIManager : MonoBehaviour
         _finalScoreText.text = finalScore.ToString();
         _highScoreText.text = highScore.ToString();
 
-        _gameOverPanel.transform.localScale = Vector3.zero;
-        _gameOverPanel.SetActive(true);
-        LeanTween.scale(_gameOverPanel, Vector3.one, 0.5f).setEaseOutExpo();
+        ShowPanel(_gameOverPanel);
+    }
+
+    private void ShowPanel(GameObject panel)
+    {
+        panel.transform.localScale = Vector3.zero;
+        panel.SetActive(true);
+        LeanTween.scale(panel, Vector3.one, 0.5f).setEaseOutExpo();
+    }
+
+    private void HidePanel(GameObject panel)
+    {
+        LeanTween.scale(panel, Vector3.zero, 0.5f).setEaseOutExpo()
+                                                  .setOnComplete(() => panel.SetActive(false));
     }
 
     public void HandleRestartButtonClick()
     {
         _gameOverPanel.SetActive(false);
+        foreach (var item in _heartImages)
+        {
+            item.SetActive(true);
+            LeanTween.scale(item, Vector3.one, 0.5f).setEaseOutExpo();
+        }
+
 
         GameManager.Instance.ResetGame();
 
@@ -136,5 +158,29 @@ public class UIManager : MonoBehaviour
             LeanTween.moveX(leftRect, leftStartX, 0.5f).setEaseInExpo();
             LeanTween.moveX(rightRect, rightStartX, 0.5f).setEaseInExpo();
         });
+    }
+
+    public void HandleSettingsButtonClick()
+    {
+        PlayerInputManager.Instance.SetInputEnabled(false);
+        ShowPanel(_settingsPanel);
+    }
+
+    public void HandleResumeButtonClick()
+    {
+        HidePanel(_settingsPanel);
+        PlayerInputManager.Instance.SetInputEnabled(true);
+    }
+
+    public void ToggleSettings()
+    {
+        if (_settingsPanel.activeSelf)
+        {
+            HandleResumeButtonClick();
+        }
+        else
+        {
+            HandleSettingsButtonClick();
+        }
     }
 }

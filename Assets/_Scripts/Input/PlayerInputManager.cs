@@ -23,14 +23,18 @@ public class PlayerInputManager : Singleton<PlayerInputManager>
     private void OnEnable()
     {
         _inputActions.Player.Enable();
+
         _inputActions.Player.ToggleCamera.performed += ToggleCamera;
         _inputActions.Player.Click.performed += HandleClick;
+        _inputActions.Player.Settings.performed += HandleSettings;
     }
 
     private void OnDisable()
     {
         _inputActions.Player.ToggleCamera.performed -= ToggleCamera;
         _inputActions.Player.Click.performed -= HandleClick;
+        _inputActions.Player.Settings.performed -= HandleSettings;
+
         _inputActions.Player.Disable();
     }
 
@@ -81,6 +85,11 @@ public class PlayerInputManager : Singleton<PlayerInputManager>
                 GameManager.Instance.HandleCellClick(hexCell);
             }
         }
+    }
+
+    private void HandleSettings(InputAction.CallbackContext context)
+    {
+        UIManager.Instance.ToggleSettings();
     }
 
     private void HandleMouseHover()

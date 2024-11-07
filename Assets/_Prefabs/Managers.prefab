@@ -515,5 +515,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _width: 30
   _height: 30
+  _optimizedCellPrefab: {fileID: 3292960435244435984, guid: 215de1aa310a13f41b91c3ddad28ceab, type: 3}
   _hexCellPrefab: {fileID: 3292960435244435984, guid: 66c6ad06ea72960488da5b06b5f742dd, type: 3}
   _modelsConfig: {fileID: 11400000, guid: bf25498215d33264dbcda8cab39072a3, type: 2}

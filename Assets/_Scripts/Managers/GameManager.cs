@@ -14,6 +14,9 @@ public class GameManager : Singleton<GameManager>
     public const string HighScoreKey = "HighScore";
     public GameState CurrentState { get; private set; }
 
+    [field: SerializeField]
+    public bool IsOptimized { get; set; } = true;
+
     private int _lives = 3;
     private int _targetIslandId;
 

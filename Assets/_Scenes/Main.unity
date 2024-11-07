@@ -408,10 +408,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Managers
       objectReference: {fileID: 0}
-    - target: {fileID: 3652089692834363092, guid: 8c3f9067105a793488475446c74bd24f, type: 3}
-      propertyPath: _hexCellPrefab
-      value: 
-      objectReference: {fileID: 3292960435244435984, guid: 215de1aa310a13f41b91c3ddad28ceab, type: 3}
     - target: {fileID: 7518633108036322720, guid: 8c3f9067105a793488475446c74bd24f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
