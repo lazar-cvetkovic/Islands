@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7f6832f3febf2d4479f4b8a2bc729481, type: 3}
-  m_Name: DecorationObject 4
+  m_Name: LandDecorationObject 3
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 1670036801118281795, guid: 96340b75b1106e344b4dd6db8ef4c874, type: 3}
+  Prefab: {fileID: 5432257398769880893, guid: 1c159f4a41857a94da6b57126c16e5b6, type: 3}
   MinHeight: 101
   MaxHeight: 500
-  MaxSpawnPerTile: 8
-  SpawnProbability: 0.9
+  MaxSpawnPerTile: 1
+  SpawnProbability: 0.2

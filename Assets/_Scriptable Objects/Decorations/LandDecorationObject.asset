@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7f6832f3febf2d4479f4b8a2bc729481, type: 3}
-  m_Name: DecorationObject
+  m_Name: LandDecorationObject
   m_EditorClassIdentifier: 
   Prefab: {fileID: 3873870376534877025, guid: 3ea5ef672d6f83b47b70f1eeb5e61baa, type: 3}
   MinHeight: 101
