@@ -18,4 +18,7 @@ public class ModelsConfigSO : ScriptableObject
     public GameObject TileForHeightAbove700;
     public GameObject TileForHeightAbove800;
     public GameObject TileForHeightAbove900;
+
+    [Header("Decoration Objects")]
+    public AllDecorationObjectsSO DecorationObjects;
 }

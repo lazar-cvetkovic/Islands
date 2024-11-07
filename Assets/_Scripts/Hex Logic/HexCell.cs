@@ -1,8 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
-public class HexCell : MonoBehaviour, IPointerClickHandler
+public class HexCell : MonoBehaviour
 {
     [SerializeField] private float _tileDropHeight = 3;
 
@@ -53,6 +53,7 @@ public class HexCell : MonoBehaviour, IPointerClickHandler
             }
 
             SpawnTopTile(totalFillTiles, _tileDropHeight);
+            SpawnDecorations();
         }
     }
 
@@ -112,9 +113,107 @@ public class HexCell : MonoBehaviour, IPointerClickHandler
         };
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    public void SpawnDecorations()
     {
-        GameManager.Instance.HandleCellClick(this);
+        if (_modelsConfig.DecorationObjects == null || _modelsConfig.DecorationObjects.Decorations == null)
+            return;
+
+        var decorations = _modelsConfig.DecorationObjects.Decorations;
+
+        int cellHeight = Height;
+
+        var possibleDecorations = new List<DecorationObjectSO>();
+
+        foreach (var decoration in decorations)
+        {
+            if (cellHeight >= decoration.MinHeight && cellHeight <= decoration.MaxHeight)
+            {
+                possibleDecorations.Add(decoration);
+            }
+        }
+
+        if (possibleDecorations.Count == 0)
+        {
+            return;
+        }
+
+        float totalProbability = 0f;
+        foreach (var decoration in possibleDecorations)
+        {
+            totalProbability += decoration.SpawnProbability;
+        }
+
+        if (totalProbability <= 0f)
+        {
+            return;
+        }
+
+        float randomValue = Random.Range(0f, totalProbability);
+
+        float cumulativeProbability = 0f;
+
+        DecorationObjectSO selectedDecoration = null;
+
+        foreach (var decoration in possibleDecorations)
+        {
+            cumulativeProbability += decoration.SpawnProbability;
+
+            if (randomValue <= cumulativeProbability)
+            {
+                selectedDecoration = decoration;
+                break;
+            }
+        }
+
+        if (selectedDecoration != null)
+        {
+            int spawnCount = 1;
+            if (selectedDecoration.MaxSpawnPerTile > 1)
+            {
+                spawnCount = Random.Range(1, selectedDecoration.MaxSpawnPerTile + 1);
+            }
+
+            for (int i = 0; i < spawnCount; i++)
+            {
+                Vector3 decorationPosition = GetDecorationPosition(i, spawnCount);
+
+                GameObject decorationObject = Instantiate(selectedDecoration.Prefab, decorationPosition, Quaternion.identity, transform);
+
+                decorationObject.transform.Rotate(0f, Random.Range(0f, 360f), 0f);
+            }
+        }
+    }
+
+    private Vector3 GetDecorationPosition(int index, int total)
+    {
+        Vector3 topPosition = GetTopTilePosition();
+
+        if (total == 1)
+        {
+            return topPosition;
+        }
+        else
+        {
+            float angle = (360f / total) * index;
+            float radius = HexMetrics.InnerRadius * 0.2f;
+
+            float x = Mathf.Cos(angle * Mathf.Deg2Rad) * radius;
+            float z = Mathf.Sin(angle * Mathf.Deg2Rad) * radius;
+
+            return topPosition + new Vector3(x, 0f, z);
+        }
+    }
+
+    private Vector3 GetTopTilePosition()
+    {
+        int fullHundreds = Height / 100;
+        int remainder = Height % 100;
+        int totalFillTiles = fullHundreds + (remainder > 0 ? 1 : 0);
+        float dropHeight = _tileDropHeight;
+
+        Vector3 topPosition = transform.position + Vector3.up * (dropHeight + totalFillTiles);
+
+        return topPosition;
     }
 
     public void Highlight()
@@ -122,7 +221,7 @@ public class HexCell : MonoBehaviour, IPointerClickHandler
         foreach (var renderer in _renderers)
         {
             renderer.GetPropertyBlock(_propertyBlock);
-            _propertyBlock.SetColor(ColorProperty, Color.gray); 
+            _propertyBlock.SetColor(ColorProperty, Color.gray);
             renderer.SetPropertyBlock(_propertyBlock);
         }
 
@@ -134,7 +233,7 @@ public class HexCell : MonoBehaviour, IPointerClickHandler
         foreach (var renderer in _renderers)
         {
             renderer.GetPropertyBlock(_propertyBlock);
-            _propertyBlock.SetColor(ColorProperty, Color.white); 
+            _propertyBlock.SetColor(ColorProperty, Color.white);
             renderer.SetPropertyBlock(_propertyBlock);
         }
     }

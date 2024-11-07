@@ -24,3 +24,4 @@ MonoBehaviour:
   TileForHeightAbove700: {fileID: 958050590075379825, guid: 2782ffac615e79f41b9e25e22eb6910e, type: 3}
   TileForHeightAbove800: {fileID: 7839409205652156877, guid: cf6451e09beb92c4582be832f8d42aac, type: 3}
   TileForHeightAbove900: {fileID: 7839409205652156877, guid: cf6451e09beb92c4582be832f8d42aac, type: 3}
+  DecorationObjects: {fileID: 11400000, guid: 3487c5e6125db4d4aa8ed939f448cc6f, type: 2}

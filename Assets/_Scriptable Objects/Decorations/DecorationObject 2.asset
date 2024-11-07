@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6832f3febf2d4479f4b8a2bc729481, type: 3}
+  m_Name: DecorationObject 2
+  m_EditorClassIdentifier: 
+  Prefab: {fileID: 6295619895054786954, guid: 1f4bd86471250554db2ca0056260d766, type: 3}
+  MinHeight: 101
+  MaxHeight: 500
+  MaxSpawnPerTile: 1
+  SpawnProbability: 0.2
