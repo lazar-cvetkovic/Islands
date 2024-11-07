@@ -4,18 +4,27 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    [Header("Main UI")]
     [SerializeField] private TMP_Text _scoreText;
-    [SerializeField] private GameObject[] _heartImages; 
+    [SerializeField] private GameObject[] _heartImages;
 
+    [Header("Game Over UI")]
     [SerializeField] private GameObject _gameOverPanel;
     [SerializeField] private TMP_Text _finalScoreText;
     [SerializeField] private TMP_Text _highScoreText;
+
+    [Header("Average Height UI")]
+    [SerializeField] private GameObject _leftHeightObject;
+    [SerializeField] private GameObject _rightHeightObject;
+    [SerializeField] private TMP_Text _leftHeightText;
+    [SerializeField] private TMP_Text _rightHeightText;
 
     private void OnEnable()
     {
         GameManager.OnScoreChanged += UpdateScoreUI;
         GameManager.OnLivesChanged += UpdateLivesUI;
         GameManager.OnGameOver += ShowGameOverUI;
+        GameManager.OnIslandAverageHeightShown += ShowCompareHeightUI;
     }
 
     private void OnDisable()
@@ -23,6 +32,7 @@ public class UIManager : MonoBehaviour
         GameManager.OnScoreChanged -= UpdateScoreUI;
         GameManager.OnLivesChanged -= UpdateLivesUI;
         GameManager.OnGameOver -= ShowGameOverUI;
+        GameManager.OnIslandAverageHeightShown -= ShowCompareHeightUI;
     }
 
     private void Start()
@@ -85,4 +95,46 @@ public class UIManager : MonoBehaviour
     }
 
     public void HandleQuitButtonClick() => Application.Quit();
+
+    private void ShowCompareHeightUI(float selectedIsland, float targetIsland)
+    {
+        SetAverageHeightText(selectedIsland, targetIsland);
+        SlideAverageHeightUI();
+    }
+
+    private void SetAverageHeightText(float selectedIsland, float targetIsland)
+    {
+        float leftAverageHeight = selectedIsland;
+        float rightAverageHeight = targetIsland;
+
+        _leftHeightText.text = leftAverageHeight.ToString("F2");
+        _rightHeightText.text = rightAverageHeight.ToString("F2");
+    }
+
+    private void SlideAverageHeightUI()
+    {
+        RectTransform leftRect = _leftHeightObject.GetComponent<RectTransform>();
+        RectTransform rightRect = _rightHeightObject.GetComponent<RectTransform>();
+        RectTransform parentRect = leftRect.parent.GetComponent<RectTransform>();
+
+        float parentWidth = parentRect.rect.width;
+
+        float leftStartX = -parentWidth / 2 - leftRect.rect.width;
+        float rightStartX = parentWidth / 2 + rightRect.rect.width;
+
+        leftRect.anchoredPosition = new Vector2(leftStartX, leftRect.anchoredPosition.y);
+        rightRect.anchoredPosition = new Vector2(rightStartX, rightRect.anchoredPosition.y);
+
+        float leftEndX = -parentWidth / 2 + leftRect.rect.width / 2;
+        float rightEndX = parentWidth / 2 - rightRect.rect.width / 2;
+
+        LeanTween.moveX(leftRect, leftEndX, 0.5f).setEaseOutExpo();
+        LeanTween.moveX(rightRect, rightEndX, 0.5f).setEaseOutExpo();
+
+        LeanTween.delayedCall(3f, () =>
+        {
+            LeanTween.moveX(leftRect, leftStartX, 0.5f).setEaseInExpo();
+            LeanTween.moveX(rightRect, rightStartX, 0.5f).setEaseInExpo();
+        });
+    }
 }

@@ -9,6 +9,7 @@ public class GameManager : Singleton<GameManager>
     public static event Action<int> OnScoreChanged;
     public static event Action<int, int> OnLivesChanged; 
     public static event Action<int, int> OnGameOver;
+    public static event Action<float, float> OnIslandAverageHeightShown;
 
     public const string HighScoreKey = "HighScore";
     public GameState CurrentState { get; private set; }
@@ -21,7 +22,7 @@ public class GameManager : Singleton<GameManager>
     private IslandDetector _islandDetector;
 
     private int _score = 0;
-    private WaitForSeconds _islandSelectionWaitTime = new(2);
+    private WaitForSeconds _islandSelectionWaitTime = new(3);
 
     protected override void Awake()
     {
@@ -83,12 +84,8 @@ public class GameManager : Singleton<GameManager>
 
     private IEnumerator HandleIslandSelection(int selectedIslandId)
     {
-        ChangeIslandColor(_targetIslandId, Color.green);
-
-        if (selectedIslandId != _targetIslandId)
-        {
-            ChangeIslandColor(selectedIslandId, Color.red);
-        }
+        SetIslandColor(selectedIslandId);
+        SendUIFeedbackForSelectedIsland(selectedIslandId);
 
         yield return _islandSelectionWaitTime;
 
@@ -130,6 +127,24 @@ public class GameManager : Singleton<GameManager>
                 PlayerInputManager.Instance.SetInputEnabled(true);
                 AudioManager.Instance.PlaySFX(SoundType.LooseHeart);
             }
+        }
+    }
+
+    private void SendUIFeedbackForSelectedIsland(int selectedIslandId)
+    {
+        float currentIslandHeight = _islandDetector.GetAverageHeight(selectedIslandId);
+        float targetIslandHeight = _islandDetector.GetAverageHeight(_targetIslandId);
+
+        OnIslandAverageHeightShown?.Invoke(currentIslandHeight, targetIslandHeight);
+    }
+
+    private void SetIslandColor(int selectedIslandId)
+    {
+        ChangeIslandColor(_targetIslandId, Color.green);
+
+        if (selectedIslandId != _targetIslandId)
+        {
+            ChangeIslandColor(selectedIslandId, Color.red);
         }
     }
 
