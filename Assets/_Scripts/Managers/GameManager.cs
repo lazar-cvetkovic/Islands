@@ -20,9 +20,9 @@ public class GameManager : Singleton<GameManager>
     private int _lives = 3;
     private int _targetIslandId;
 
-    private DataLoader _dataLoader;
-    private HexGrid _hexGrid;
-    private IslandDetector _islandDetector;
+    private IDataLoader _dataLoader;
+    private IHexGrid _hexGrid;
+    private IIslandDetector _islandDetector;
 
     private int _score = 0;
     private WaitForSeconds _islandSelectionWaitTime = new(3);

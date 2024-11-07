@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class DataLoader : MonoBehaviour
+public class DataLoader : MonoBehaviour, IDataLoader
 {
     public int[,] HeightMap { get; private set; }
 

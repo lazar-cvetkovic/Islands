@@ -77,6 +77,9 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ae845aa2c587f3b4bb4ceb15a4793e3b, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 4196072725954047597}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ae845aa2c587f3b4bb4ceb15a4793e3b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2179910783232531977}
   m_SourcePrefab: {fileID: 100100000, guid: ae845aa2c587f3b4bb4ceb15a4793e3b, type: 3}
@@ -85,6 +88,20 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ae845aa2c587f3b4bb4ceb15a4793e3b, type: 3}
   m_PrefabInstance: {fileID: 9081542104727468364}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4196072725954047597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8271273842010588189}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceac3cf3e0da78446be106b3510a34c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amplitude: 0.12
+  frequency: 3
 --- !u!65 &2179910783232531977
 BoxCollider:
   m_ObjectHideFlags: 0

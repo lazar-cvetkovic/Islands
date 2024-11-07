@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public class IslandDetector
+public class IslandDetector : IIslandDetector
 {
     private IHexCell[,] _cells;
     private int _width;

@@ -14,14 +14,7 @@ public class AllDecorationObjectsSO : ScriptableObject
 
         int cellHeight = cell.Height;
 
-        var possibleDecorations = new List<DecorationObjectSO>();
-        foreach (var decoration in Decorations)
-        {
-            if (cellHeight >= decoration.MinHeight && cellHeight <= decoration.MaxHeight)
-            {
-                possibleDecorations.Add(decoration);
-            }
-        }
+        List<DecorationObjectSO> possibleDecorations = GetPossibleDecorations(cellHeight);
 
         if (possibleDecorations.Count == 0)
             return;
@@ -37,8 +30,34 @@ public class AllDecorationObjectsSO : ScriptableObject
 
         float randomValue = Random.Range(0f, totalProbability);
 
-        float cumulativeProbability = 0f;
+        DecorationObjectSO selectedDecoration = GetSelectedDecoration(possibleDecorations, randomValue);
+
+        if (selectedDecoration == null)
+        {
+            return;
+        }
+
+        SpawnFinalDecorations(cell, cellHeight, selectedDecoration);
+    }
+
+    private List<DecorationObjectSO> GetPossibleDecorations(int cellHeight)
+    {
+        var possibleDecorations = new List<DecorationObjectSO>();
+        foreach (var decoration in Decorations)
+        {
+            if (cellHeight >= decoration.MinHeight && cellHeight <= decoration.MaxHeight)
+            {
+                possibleDecorations.Add(decoration);
+            }
+        }
+
+        return possibleDecorations;
+    }
+
+    private static DecorationObjectSO GetSelectedDecoration(List<DecorationObjectSO> possibleDecorations, float randomValue)
+    {
         DecorationObjectSO selectedDecoration = null;
+        float cumulativeProbability = 0f;
 
         foreach (var decoration in possibleDecorations)
         {
@@ -51,23 +70,28 @@ public class AllDecorationObjectsSO : ScriptableObject
             }
         }
 
-        if (selectedDecoration != null)
+        return selectedDecoration;
+    }
+
+    private void SpawnFinalDecorations(IHexCell cell, int cellHeight, DecorationObjectSO selectedDecoration)
+    {
+        int spawnCount = 1;
+        if (selectedDecoration.MaxSpawnPerTile > 1)
         {
-            int spawnCount = 1;
-            if (selectedDecoration.MaxSpawnPerTile > 1)
+            spawnCount = Random.Range(1, selectedDecoration.MaxSpawnPerTile + 1);
+        }
+
+        for (int i = 0; i < spawnCount; i++)
+        {
+            Vector3 decorationPosition = GetDecorationPosition(cell, i, spawnCount);
+
+            if (selectedDecoration.Prefab == null) return;
+
+            GameObject decorationObject = Instantiate(selectedDecoration.Prefab, decorationPosition, Quaternion.identity, cell.CellTransform);
+            decorationObject.transform.Rotate(0f, Random.Range(0f, 360f), 0f);
+
+            if (cellHeight != 0)
             {
-                spawnCount = Random.Range(1, selectedDecoration.MaxSpawnPerTile + 1);
-            }
-
-            for (int i = 0; i < spawnCount; i++)
-            {
-                Vector3 decorationPosition = GetDecorationPosition(cell, i, spawnCount);
-
-                if (selectedDecoration.Prefab == null) return;
-
-                GameObject decorationObject = Instantiate(selectedDecoration.Prefab, decorationPosition, Quaternion.identity, cell.CellTransform);
-                decorationObject.transform.Rotate(0f, Random.Range(0f, 360f), 0f);
-
                 HexCell.AddRigidbody(decorationObject);
             }
         }

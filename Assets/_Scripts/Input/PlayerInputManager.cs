@@ -110,7 +110,7 @@ public class PlayerInputManager : Singleton<PlayerInputManager>
             {
                 int newIslandId = hexCell.IslandId;
 
-                if (_currentHoveredIslandId != newIslandId && newIslandId != _selectedIslandId)
+                if (newIslandId != -1 && _currentHoveredIslandId != newIslandId && newIslandId != _selectedIslandId)
                 {
                     UnhighlightCurrentIsland();
 
@@ -119,13 +119,13 @@ public class PlayerInputManager : Singleton<PlayerInputManager>
 
                     HighlightIsland(_currentHoveredIslandId);
                 }
-            }
-            else
-            {
-                UnhighlightCurrentIsland();
+                else if (newIslandId == -1)
+                {
+                    _currentHoveredCell = null;
+                }
             }
         }
-        else
+        else if(_currentHoveredIslandId != -1)
         {
             UnhighlightCurrentIsland();
         }

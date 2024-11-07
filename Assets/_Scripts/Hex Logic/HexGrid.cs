@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class HexGrid : MonoBehaviour
+public class HexGrid : MonoBehaviour, IHexGrid
 {
     [SerializeField] private int _width = 30;
     [SerializeField] private int _height = 30;
@@ -15,7 +15,7 @@ public class HexGrid : MonoBehaviour
     public IHexCell[,] Cells => _cells;
     public int Height => _height;
     public int Width => _width;
-    public GameObject CellPrefab => GameManager.Instance.IsOptimized ? _optimizedCellPrefab : _hexCellPrefab;  
+    public GameObject CellPrefab => GameManager.Instance.IsOptimized ? _optimizedCellPrefab : _hexCellPrefab;
 
     public void GenerateGrid(int[,] heightMap)
     {
