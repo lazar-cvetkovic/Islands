@@ -7,15 +7,15 @@ public class HexGrid : MonoBehaviour
     [SerializeField] private GameObject _hexCellPrefab;
     [SerializeField] private ModelsConfigSO _modelsConfig;
 
-    private HexCell[,] _cells;
+    private IHexCell[,] _cells;
 
-    public HexCell[,] Cells => _cells;
+    public IHexCell[,] Cells => _cells;
     public int Height => _height;
     public int Width => _width;
 
     public void GenerateGrid(int[,] heightMap)
     {
-        _cells = new HexCell[_width, _height];
+        _cells = new IHexCell[_width, _height];
         for (int axialX = 0; axialX < _width; axialX++)
         {
             for (int axialY = 0; axialY < _height; axialY++)
@@ -33,7 +33,11 @@ public class HexGrid : MonoBehaviour
             {
                 if (cell != null)
                 {
-                    Destroy(cell.gameObject);
+                    MonoBehaviour cellMono = cell as MonoBehaviour;
+                    if (cellMono != null)
+                    {
+                        Destroy(cellMono.gameObject);
+                    }
                 }
             }
         }
@@ -43,7 +47,7 @@ public class HexGrid : MonoBehaviour
     {
         Vector3 position = CalculatePosition(axialX, axialY);
         GameObject cellObject = Instantiate(_hexCellPrefab, position, Quaternion.identity, transform);
-        HexCell cell = cellObject.GetComponent<HexCell>();
+        IHexCell cell = cellObject.GetComponent<IHexCell>();
         cell.Initialize(new HexCoordinates(axialX, axialY), cellHeight, _modelsConfig);
         _cells[axialX, axialY] = cell;
     }

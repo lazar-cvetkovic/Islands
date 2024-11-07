@@ -143,7 +143,7 @@ public class BoatMovement : MonoBehaviour
 
     private bool FindRandomWaterPosition(out Vector3 position)
     {
-        var waterCells = new List<HexCell>();
+        var waterCells = new List<IHexCell>();
         foreach (var cell in _hexGrid.Cells)
         {
             if (cell != null && cell.IsWater)
@@ -158,9 +158,9 @@ public class BoatMovement : MonoBehaviour
             return false;
         }
 
-        HexCell randomCell = waterCells[Random.Range(0, waterCells.Count)];
+        IHexCell randomCell = waterCells[Random.Range(0, waterCells.Count)];
 
-        position = randomCell.transform.position;
+        position = randomCell.CellTransform.position;
         position.y = _startingYPosition;
 
         return true;

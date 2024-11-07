@@ -1,19 +1,20 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 [CreateAssetMenu(fileName = "AllDecorationObjects", menuName = "ScriptableObjects/AllDecorationObjects", order = 2)]
 public class AllDecorationObjectsSO : ScriptableObject
 {
     public List<DecorationObjectSO> Decorations;
 
-    public void SpawnDecorations(HexCell cell)
+    public void SpawnDecorations(IHexCell cell)
     {
         if (Decorations == null || Decorations.Count == 0)
             return;
 
         int cellHeight = cell.Height;
 
-        List<DecorationObjectSO> possibleDecorations = new List<DecorationObjectSO>();
+        var possibleDecorations = new List<DecorationObjectSO>();
         foreach (var decoration in Decorations)
         {
             if (cellHeight >= decoration.MinHeight && cellHeight <= decoration.MaxHeight)
@@ -64,13 +65,15 @@ public class AllDecorationObjectsSO : ScriptableObject
 
                 if (selectedDecoration.Prefab == null) return;
 
-                GameObject decorationObject = Instantiate(selectedDecoration.Prefab, decorationPosition, Quaternion.identity, cell.transform);
+                GameObject decorationObject = Instantiate(selectedDecoration.Prefab, decorationPosition, Quaternion.identity, cell.CellTransform);
                 decorationObject.transform.Rotate(0f, Random.Range(0f, 360f), 0f);
+
+                HexCell.AddRigidbody(decorationObject);
             }
         }
     }
 
-    private Vector3 GetDecorationPosition(HexCell cell, int index, int total)
+    private Vector3 GetDecorationPosition(IHexCell cell, int index, int total)
     {
         Vector3 basePosition = cell.GetTopTilePosition();
 

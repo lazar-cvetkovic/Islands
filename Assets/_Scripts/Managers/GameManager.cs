@@ -67,7 +67,7 @@ public class GameManager : Singleton<GameManager>
         OnLivesChanged?.Invoke(_lives, 3);
     }
 
-    public void HandleCellClick(HexCell cell)
+    public void HandleCellClick(IHexCell cell)
     {
         AudioManager.Instance.PlaySFX(SoundType.Click);
 
@@ -157,19 +157,20 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    public List<HexCell> GetIslandCells(int islandId)
+    public List<IHexCell> GetIslandCells(int islandId)
     {
         if (_islandDetector.Islands.TryGetValue(islandId, out var islandCells))
         {
             return islandCells;
         }
-        return new List<HexCell>();
+        return new List<IHexCell>();
     }
 
     public void ResetGame()
     {
         _score = 0;
         _lives = 3;
+
         InitializeGame();
 
         OnScoreChanged?.Invoke(_score);

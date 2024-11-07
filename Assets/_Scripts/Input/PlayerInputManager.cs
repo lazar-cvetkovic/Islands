@@ -10,7 +10,7 @@ public class PlayerInputManager : Singleton<PlayerInputManager>
     private PlayerInputActions _inputActions;
     private bool _inputEnabled = true;
 
-    private HexCell _currentHoveredCell;
+    private IHexCell _currentHoveredCell;
     private int _currentHoveredIslandId = -1;
     private int _selectedIslandId = -1;
 
@@ -25,15 +25,21 @@ public class PlayerInputManager : Singleton<PlayerInputManager>
         _inputActions.Player.Enable();
         _inputActions.Player.ToggleCamera.performed += ToggleCamera;
         _inputActions.Player.Click.performed += HandleClick;
-        _inputActions.Player.MouseMove.performed += HandleMouseHover;
     }
 
     private void OnDisable()
     {
         _inputActions.Player.ToggleCamera.performed -= ToggleCamera;
         _inputActions.Player.Click.performed -= HandleClick;
-        _inputActions.Player.MouseMove.performed -= HandleMouseHover;
         _inputActions.Player.Disable();
+    }
+
+    private void Update()
+    {
+        if (_inputEnabled)
+        {
+            HandleMouseHover();
+        }
     }
 
     public void SetInputEnabled(bool enabled)
@@ -69,7 +75,7 @@ public class PlayerInputManager : Singleton<PlayerInputManager>
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            HexCell hexCell = hit.collider.GetComponentInParent<HexCell>();
+            var hexCell = hit.collider.GetComponentInParent<IHexCell>();
             if (hexCell != null)
             {
                 GameManager.Instance.HandleCellClick(hexCell);
@@ -77,7 +83,7 @@ public class PlayerInputManager : Singleton<PlayerInputManager>
         }
     }
 
-    private void HandleMouseHover(InputAction.CallbackContext context)
+    private void HandleMouseHover()
     {
         if (!_inputEnabled) return;
 
@@ -90,22 +96,19 @@ public class PlayerInputManager : Singleton<PlayerInputManager>
         int layerMask = LayerMask.GetMask("HexCellLayer");
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
         {
-            HexCell hexCell = hit.collider.GetComponentInParent<HexCell>();
-            if (hexCell != null)
+            var hexCell = hit.collider.GetComponentInParent<IHexCell>();
+            if (hexCell != null && _currentHoveredCell != hexCell)
             {
-                if (_currentHoveredCell != hexCell)
+                int newIslandId = hexCell.IslandId;
+
+                if (_currentHoveredIslandId != newIslandId && newIslandId != _selectedIslandId)
                 {
-                    int newIslandId = hexCell.IslandId;
+                    UnhighlightCurrentIsland();
 
-                    if (_currentHoveredIslandId != newIslandId && newIslandId != _selectedIslandId)
-                    {
-                        UnhighlightCurrentIsland();
+                    _currentHoveredCell = hexCell;
+                    _currentHoveredIslandId = newIslandId;
 
-                        _currentHoveredCell = hexCell;
-                        _currentHoveredIslandId = newIslandId;
-
-                        HighlightIsland(_currentHoveredIslandId);
-                    }
+                    HighlightIsland(_currentHoveredIslandId);
                 }
             }
             else

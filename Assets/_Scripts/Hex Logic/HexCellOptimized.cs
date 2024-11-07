@@ -1,14 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
-public class HexCell : MonoBehaviour, IHexCell
+public class HexCellOptimized : MonoBehaviour, IHexCell
 {
-    public const RigidbodyConstraints CellRigidbodyConstraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ |
-                                                                  RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-    
-    [SerializeField] private float _tileDropHeight = 3;
-
     public HexCoordinates Coordinates { get; private set; }
     public int Height { get; private set; }
     public int IslandId { get; set; } = -1;
@@ -21,6 +15,11 @@ public class HexCell : MonoBehaviour, IHexCell
     private MaterialPropertyBlock _propertyBlock;
     private static readonly int ColorProperty = Shader.PropertyToID("_BaseColor");
 
+    private List<GameObject> _spawnedTiles = new List<GameObject>();
+
+    private const float InitialLocalYPosition = -1.5f;
+    private const float TileHeight = 0.15f;
+
     public void Initialize(HexCoordinates coordinates, int height, ModelsConfigSO modelsConfig)
     {
         Coordinates = coordinates;
@@ -31,6 +30,8 @@ public class HexCell : MonoBehaviour, IHexCell
 
         _renderers = GetComponentsInChildren<Renderer>();
         _propertyBlock = new MaterialPropertyBlock();
+
+        SetHighlightColor(Color.white);
     }
 
     private void SpawnTiles()
@@ -44,19 +45,21 @@ public class HexCell : MonoBehaviour, IHexCell
             int fullHundreds = Height / 100;
             int remainder = Height % 100;
 
-            int totalFillTiles = fullHundreds + (remainder > 0 ? 1 : 0);
+            float currentHeight = 0f;
 
             for (int i = 0; i < fullHundreds; i++)
             {
                 SpawnFillTile(i);
+                currentHeight += TileHeight;
             }
 
             if (remainder > 0)
             {
-                SpawnAndScaleLastFillTile(fullHundreds, remainder);
+                float scaledTileHeight = SpawnScaledFillTile(fullHundreds, remainder);
+                currentHeight += scaledTileHeight;
             }
 
-            SpawnTopTile(totalFillTiles);
+            SpawnTopTile(currentHeight);
         }
 
         if (_modelsConfig.DecorationObjects != null)
@@ -67,58 +70,68 @@ public class HexCell : MonoBehaviour, IHexCell
 
     private void SpawnWater()
     {
-        GameObject waterTile = Instantiate(_modelsConfig.WaterTile, transform.position, Quaternion.identity, transform);
+        GameObject waterTile = ObjectPooler.Instance.GetPooledObject(_modelsConfig.WaterTile);
+        waterTile.transform.SetParent(transform);
+        waterTile.transform.localPosition = new Vector3(0f, InitialLocalYPosition, 0f);
+        waterTile.transform.localRotation = Quaternion.identity;
+        waterTile.SetActive(true);
 
-        AddRigidbody(waterTile);
-    }
-
-    public static Rigidbody AddRigidbody(GameObject fillTile)
-    {
-        Rigidbody rb = fillTile.GetComponent<Rigidbody>();
-        if (rb == null)
-        {
-            rb = fillTile.AddComponent<Rigidbody>();
-        }
-
-        rb.mass = 1f;
-        rb.constraints = CellRigidbodyConstraints;
-
-        return rb;
+        _spawnedTiles.Add(waterTile);
     }
 
     private void SpawnFillTile(int index)
     {
-        Vector3 position = transform.position + Vector3.up * (_tileDropHeight + index);
-        GameObject fillTile = Instantiate(_modelsConfig.HeightFillTile, position, Quaternion.identity, transform);
+        GameObject fillTile = ObjectPooler.Instance.GetPooledObject(_modelsConfig.HeightFillTile);
+        fillTile.transform.SetParent(transform);
 
-        AddRigidbody(fillTile);
+        float localYPosition = InitialLocalYPosition + index * TileHeight;
+        fillTile.transform.localPosition = new Vector3(0f, localYPosition, 0f);
+        fillTile.transform.localRotation = Quaternion.identity;
+        fillTile.SetActive(true);
+
+        _spawnedTiles.Add(fillTile);
     }
 
-
-    private void SpawnAndScaleLastFillTile(int index, int remainder)
+    private float SpawnScaledFillTile(int index, int remainder)
     {
-        Vector3 position = transform.position + Vector3.up * (_tileDropHeight + index);
-        GameObject fillTile = Instantiate(_modelsConfig.HeightFillTile, position, Quaternion.identity, transform);
+        GameObject fillTile = ObjectPooler.Instance.GetPooledObject(_modelsConfig.HeightFillTile);
+        fillTile.transform.SetParent(transform);
+        float scaleY = ScaleTile(remainder, fillTile);
 
+        float adjustedTileHeight = TileHeight * scaleY;
+        float localYPosition = InitialLocalYPosition + index * TileHeight + (adjustedTileHeight - TileHeight) / 2f;
+
+        fillTile.transform.localPosition = new Vector3(0f, localYPosition, 0f);
+        fillTile.transform.localRotation = Quaternion.identity;
+        fillTile.SetActive(true);
+
+        _spawnedTiles.Add(fillTile);
+
+        return adjustedTileHeight;
+    }
+
+    private float ScaleTile(int remainder, GameObject fillTile)
+    {
         float scaleY = remainder / 100f;
         Vector3 localScale = fillTile.transform.localScale;
         localScale.y *= scaleY;
         fillTile.transform.localScale = localScale;
 
-        Vector3 localPosition = fillTile.transform.localPosition;
-        localPosition.y += (scaleY - 1f) / 2f;
-        fillTile.transform.localPosition = localPosition;
-
-        AddRigidbody(fillTile);
+        return scaleY;
     }
 
-    private void SpawnTopTile(int totalFillTiles)
+    private void SpawnTopTile(float currentHeight)
     {
-        Vector3 topPosition = transform.position + Vector3.up * (_tileDropHeight + totalFillTiles);
-        GameObject topObject = Instantiate(GetTopPrefab(), topPosition, Quaternion.identity, transform);
+        GameObject topTilePrefab = GetTopPrefab();
+        GameObject topTile = ObjectPooler.Instance.GetPooledObject(topTilePrefab);
+        topTile.transform.SetParent(transform);
 
-        Rigidbody topRb = AddRigidbody(topObject);
-        topRb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        float localYPosition = InitialLocalYPosition + currentHeight;
+        topTile.transform.localPosition = new Vector3(0f, localYPosition, 0f);
+        topTile.transform.localRotation = Quaternion.identity;
+        topTile.SetActive(true);
+
+        _spawnedTiles.Add(topTile);
     }
 
     private GameObject GetTopPrefab()
@@ -142,13 +155,22 @@ public class HexCell : MonoBehaviour, IHexCell
 
     public Vector3 GetTopTilePosition()
     {
+        float currentHeight = 0f;
         int fullHundreds = Height / 100;
         int remainder = Height % 100;
-        int totalFillTiles = fullHundreds + (remainder > 0 ? 1 : 0);
-        float dropHeight = _tileDropHeight;
 
-        Vector3 topPosition = transform.position + Vector3.up * (dropHeight + totalFillTiles);
+        currentHeight += fullHundreds * TileHeight;
 
+        if (remainder > 0)
+        {
+            float scaleY = remainder / 100f;
+            float scaledTileHeight = TileHeight * scaleY;
+            currentHeight += scaledTileHeight;
+        }
+
+        float localYPosition = InitialLocalYPosition + currentHeight;
+
+        Vector3 topPosition = transform.position + Vector3.up * localYPosition;
         return topPosition;
     }
 
@@ -187,5 +209,15 @@ public class HexCell : MonoBehaviour, IHexCell
             _propertyBlock.SetColor(ColorProperty, color);
             renderer.SetPropertyBlock(_propertyBlock);
         }
+    }
+
+    private void OnDestroy()
+    {
+        foreach (var tile in _spawnedTiles)
+        {
+            tile.SetActive(false);
+            ObjectPooler.Instance?.ReturnPooledObject(tile);
+        }
+        _spawnedTiles.Clear();
     }
 }

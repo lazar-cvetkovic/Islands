@@ -3,19 +3,19 @@ using System.Linq;
 
 public class IslandDetector
 {
-    private HexCell[,] _cells;
+    private IHexCell[,] _cells;
     private int _width;
     private int _height;
 
-    public Dictionary<int, List<HexCell>> Islands { get; private set; }
+    public Dictionary<int, List<IHexCell>> Islands { get; private set; }
     public Dictionary<int, float> IslandAverageHeights { get; private set; }
 
-    public IslandDetector(HexCell[,] cells, int width, int height)
+    public IslandDetector(IHexCell[,] cells, int width, int height)
     {
         _cells = cells;
         _width = width;
         _height = height;
-        Islands = new Dictionary<int, List<HexCell>>();
+        Islands = new Dictionary<int, List<IHexCell>>();
     }
 
     public void DetectIslands()
@@ -29,7 +29,7 @@ public class IslandDetector
             {
                 if (!visited[axialX, axialY] && !_cells[axialX, axialY].IsWater)
                 {
-                    List<HexCell> islandCells = new List<HexCell>();
+                    var islandCells = new List<IHexCell>();
                     ExploreIsland(axialX, axialY, visited, islandCells, islandId);
                     Islands.Add(islandId, islandCells);
                     islandId++;
@@ -38,14 +38,14 @@ public class IslandDetector
         }
     }
 
-    private void ExploreIsland(int axialX, int axialY, bool[,] visited, List<HexCell> islandCells, int islandId)
+    private void ExploreIsland(int axialX, int axialY, bool[,] visited, List<IHexCell> islandCells, int islandId)
     {
-        Queue<HexCell> queue = new Queue<HexCell>();
+        var queue = new Queue<IHexCell>();
         queue.Enqueue(_cells[axialX, axialY]);
 
         while (queue.Count > 0)
         {
-            HexCell cell = queue.Dequeue();
+            IHexCell cell = queue.Dequeue();
             int x = cell.Coordinates.AxialX;
             int y = cell.Coordinates.AxialY;
 
@@ -55,7 +55,7 @@ public class IslandDetector
             cell.IslandId = islandId;
             islandCells.Add(cell);
 
-            foreach (HexCell neighbor in GetNeighbors(x, y))
+            foreach (IHexCell neighbor in GetNeighbors(x, y))
             {
                 if (!visited[neighbor.Coordinates.AxialX, neighbor.Coordinates.AxialY] && !neighbor.IsWater)
                 {
@@ -65,7 +65,7 @@ public class IslandDetector
         }
     }
 
-    private IEnumerable<HexCell> GetNeighbors(int axialX, int axialY)
+    private IEnumerable<IHexCell> GetNeighbors(int axialX, int axialY)
     {
         int[][] directions = new int[][]
         {
