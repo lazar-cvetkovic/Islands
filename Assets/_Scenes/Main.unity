@@ -244,6 +244,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4216480496619888351, guid: b9dd89f575339d54a9a1e5bd020f567d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4216480496619888351, guid: b9dd89f575339d54a9a1e5bd020f567d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4216480496619888351, guid: b9dd89f575339d54a9a1e5bd020f567d, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -344,6 +352,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8626998252931373633, guid: b9dd89f575339d54a9a1e5bd020f567d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8626998252931373633, guid: b9dd89f575339d54a9a1e5bd020f567d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8626998252931373633, guid: b9dd89f575339d54a9a1e5bd020f567d, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -357,6 +373,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9136887400859583355, guid: b9dd89f575339d54a9a1e5bd020f567d, type: 3}
       propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9136887400859583355, guid: b9dd89f575339d54a9a1e5bd020f567d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9136887400859583355, guid: b9dd89f575339d54a9a1e5bd020f567d, type: 3}
+      propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9136887400859583355, guid: b9dd89f575339d54a9a1e5bd020f567d, type: 3}
@@ -491,6 +515,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 6158787871121882112}
-  - {fileID: 2942589782814330087}
   - {fileID: 1583244456}
   - {fileID: 756126163315212385}
+  - {fileID: 2942589782814330087}

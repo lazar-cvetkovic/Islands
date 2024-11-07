@@ -23,7 +23,6 @@ public class GameManager : Singleton<GameManager>
     private int _score = 0;
     private WaitForSeconds _islandSelectionWaitTime = new(2);
 
-
     protected override void Awake()
     {
         base.Awake();
@@ -69,6 +68,8 @@ public class GameManager : Singleton<GameManager>
 
     public void HandleCellClick(HexCell cell)
     {
+        AudioManager.Instance.PlaySFX(SoundType.Click);
+
         if (CurrentState != GameState.Playing || cell.IsWater) return;
 
         int selectedIslandId = cell.IslandId;
@@ -82,11 +83,11 @@ public class GameManager : Singleton<GameManager>
 
     private IEnumerator HandleIslandSelection(int selectedIslandId)
     {
-        HighlightIsland(_targetIslandId, Color.green);
+        ChangeIslandColor(_targetIslandId, Color.green);
 
         if (selectedIslandId != _targetIslandId)
         {
-            HighlightIsland(selectedIslandId, Color.red);
+            ChangeIslandColor(selectedIslandId, Color.red);
         }
 
         yield return _islandSelectionWaitTime;
@@ -99,6 +100,7 @@ public class GameManager : Singleton<GameManager>
             InitializeGame();
 
             CurrentState = GameState.Playing;
+            AudioManager.Instance.PlaySFX(SoundType.Win);
         }
         else
         {
@@ -117,6 +119,7 @@ public class GameManager : Singleton<GameManager>
                 OnGameOver?.Invoke(_score, highScore);
 
                 CurrentState = GameState.GameOver;
+                AudioManager.Instance.PlaySFX(SoundType.LooseFinal);
             }
             else
             {
@@ -125,11 +128,12 @@ public class GameManager : Singleton<GameManager>
                 CurrentState = GameState.Playing;
 
                 PlayerInputManager.Instance.SetInputEnabled(true);
+                AudioManager.Instance.PlaySFX(SoundType.LooseHeart);
             }
         }
     }
 
-    private void HighlightIsland(int islandId, Color color)
+    private void ChangeIslandColor(int islandId, Color color)
     {
         var islandCells = GetIslandCells(islandId);
         foreach (var cell in islandCells)

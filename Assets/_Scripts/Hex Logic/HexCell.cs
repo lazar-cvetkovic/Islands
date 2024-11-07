@@ -125,6 +125,8 @@ public class HexCell : MonoBehaviour, IPointerClickHandler
             _propertyBlock.SetColor(ColorProperty, Color.gray); 
             renderer.SetPropertyBlock(_propertyBlock);
         }
+
+        AudioManager.Instance.PlaySFX(SoundType.Hover);
     }
 
     public void Unhighlight()

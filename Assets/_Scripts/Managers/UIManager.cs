@@ -75,7 +75,7 @@ public class UIManager : MonoBehaviour
         LeanTween.scale(_gameOverPanel, Vector3.one, 0.5f).setEaseOutExpo();
     }
 
-    public void OnRestartButton()
+    public void HandleRestartButtonClick()
     {
         _gameOverPanel.SetActive(false);
 
@@ -83,4 +83,6 @@ public class UIManager : MonoBehaviour
 
         PlayerInputManager.Instance.SetInputEnabled(true);
     }
+
+    public void HandleQuitButtonClick() => Application.Quit();
 }

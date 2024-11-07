@@ -4,19 +4,11 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Button))]
-public class CameraButton : MonoBehaviour
+public class CameraButton : UIButtonBase
 {
-    [SerializeField] Image _cameraImage;
-    [SerializeField] Sprite _camera1Sprite;
-    [SerializeField] Sprite _camera2Sprite;
-
-    Button _button;
-
-    private void Awake()
-    {
-        _button = GetComponent<Button>();
-        _button.onClick.AddListener(HandleButtonClick);
-    }
+    [SerializeField] private Image _cameraImage;
+    [SerializeField] private Sprite _camera1Sprite;
+    [SerializeField] private Sprite _camera2Sprite;
 
     private void OnEnable()
     {
@@ -30,5 +22,8 @@ public class CameraButton : MonoBehaviour
 
     private void HandleCameraChanged(bool cameraValue) => _cameraImage.sprite = cameraValue ? _camera1Sprite : _camera2Sprite;
 
-    private void HandleButtonClick() => CameraCoordinator.Instance.ToggleCamera();
+    protected override void OnButtonClick()
+    {
+        CameraCoordinator.Instance.ToggleCamera();
+    }
 }

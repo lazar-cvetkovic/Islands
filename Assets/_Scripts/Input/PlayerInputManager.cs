@@ -56,6 +56,7 @@ public class PlayerInputManager : Singleton<PlayerInputManager>
         if (!_inputEnabled) return;
 
         CameraCoordinator.Instance.ToggleCamera();
+        AudioManager.Instance.PlaySFX(SoundType.Click);
     }
 
     private void HandleClick(InputAction.CallbackContext context)
